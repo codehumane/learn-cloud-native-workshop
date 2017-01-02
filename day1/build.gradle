@@ -21,12 +21,22 @@ jar {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
-	mavenCentral()
+dependencyManagement {
+    imports {
+        mavenBom 'com.vaadin:vaadin-bom:7.6.4'
+    }
 }
 
+repositories {
+	mavenCentral()
+    maven { url "http://oss.sonatype.org/content/repositories/vaadin-snapshots/" }
+}
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile("com.vaadin:vaadin-spring-boot-starter:1.0.0")
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.springframework.boot:spring-boot-starter-data-rest')
+	compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    runtime('com.h2database:h2')
 }
