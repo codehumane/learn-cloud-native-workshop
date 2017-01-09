@@ -33,6 +33,49 @@
 
 > A simple {@link Resource} wrapping a domain object and adding links to it.
 
+## Boot Test
+
+### @RunWith
+
+- `@RunWith(SpringRunner.class)` tells JUnit to run using Spring’s testing support
+- `SpringRunner` is the new name for `SpringJUnit4ClassRunner`
+    + Boot 1.4에서부터 간소화된 이름 ([Testing improvements in Spring Boot 1.4](https://spring.io/blog/2016/04/15/testing-improvements-in-spring-boot-1-4) 참고)
+
+### @SpringBootTest
+
+- `@SpringBootTest` is saying “bootstrap with Spring Boot’s support”
+- e.g. load application.properties and give me all the Spring Boot goodness.
+- 속성
+    + `properties`
+    + `webEnvironment`
+    + `classes`: a specific configuration to load.
+
+### @WebAppConfiguration
+
+> The presence of @WebAppConfiguration on a test class indicates that a WebApplicationContext should be loaded for the test using a default for the path to the root of the web application. To override the default, specify an explicit resource path via the value() attribute.<br/>
+> \- [API Document](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/test/context/web/WebAppConfiguration.html)
+
+- 보다 자세한 내용은 [여기](https://spring.io/blog/2012/11/07/spring-framework-3-2-rc1-new-testing-features)를 참고
+
+### @AutoConfigureMockMvc
+### @TestPropertySource
+
+- [configuration 우선 순위](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) 참고
+
+### 예제 비교
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {TestConfiguration.class})
+@AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.yml")
+```
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = CloudNativeWorkshopApplication.class)
+@WebAppConfiguration
+```
+
 ## 그 외
 
 - CommandLineRunnder

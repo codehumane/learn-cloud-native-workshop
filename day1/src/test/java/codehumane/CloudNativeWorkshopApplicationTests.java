@@ -19,23 +19,23 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 public class CloudNativeWorkshopApplicationTests {
 
-	@Autowired
-	private WebApplicationContext webApplicationContext;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Before
-	public void before() throws Exception {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-				.build();
-	}
+    @Before
+    public void before() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
+                .build();
+    }
 
-	@Test
-	public void contextLoads() throws Exception {
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/reservations"))
-				.andExpect(MockMvcResultMatchers.content().contentType(
-				        MediaType.parseMediaType("application/hal+json;charset=UTF-8")))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-	}
+    @Test
+    public void contextLoads() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/reservations"))
+                .andExpect(MockMvcResultMatchers.content().contentType(
+                        MediaType.parseMediaType("application/hal+json;charset=UTF-8")))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 
 }
