@@ -35,12 +35,7 @@ public class CloudNativeWorkshopApplication {
 
     @Bean
     HealthIndicator healthIndicator() {
-        return new HealthIndicator() {
-            @Override
-            public Health health() {
-                return Health.status("health.status.custom").build();
-            }
-        };
+        return () -> Health.status("health.status.custom").build();
     }
 
     @Bean
