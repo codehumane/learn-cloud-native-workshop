@@ -25,10 +25,11 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ## 따라하기
 
-아래 2가지 리소스를 기반으로 학습을 진행함
+아래 3가지 리소스를 기반으로 학습을 진행함
 
-1. [Cloud Native Workshop Hands-On 영상](https://youtu.be/fxB0tVnAi0I?t=2350)
+1. [Cloud Native Workshop Hands-On Youtube](https://youtu.be/fxB0tVnAi0I?t=2350)
 2. [Cloud Native Workshop Github repository](https://github.com/joshlong/cloud-native-workshop/tree/master/labs/2/reservation-service)
+3. [Spring Boot Actuator: Production-ready features](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready.html)
 
 ### Actuator Endpoints 추가
 
