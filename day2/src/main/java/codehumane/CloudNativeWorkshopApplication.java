@@ -1,13 +1,16 @@
 package codehumane;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.health.Health;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 public class CloudNativeWorkshopApplication {
@@ -37,6 +41,19 @@ public class CloudNativeWorkshopApplication {
                 return Health.status("health.status.custom").build();
             }
         };
+    }
+
+    @Bean
+    GraphiteReporter graphiteReporter(
+            MetricRegistry registry,
+            @Value("${graphite.host}") String host,
+            @Value("${graphite.port}") int port) {
+
+        GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
+                .prefixedWith("reservations")
+                .build(new Graphite(host, port));
+        reporter.start(2, TimeUnit.SECONDS);
+        return reporter;
     }
 
 	@Bean

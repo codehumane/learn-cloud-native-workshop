@@ -14,7 +14,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] 사용자가 정의한 `HealthIndicator`를 통해 `HealthEndpoint` 커스터마이징
 - [x] `./bin/graphite.sh` 실행
 - [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
-- [ ] Add a `GraphiteReporter` bean
+- [x] `GraphiteReporter` @Bean 추가
 - [ ] Add `io.dropwizard.metrics`:`metrics-graphite`
 - [ ] Build an executable `.jar` (UNIX-specific) using the `<executable/>` configuration flag
 - [ ] Add the HAL browser - `org.springframework.data`:`spring-data-rest-hal-browser` and view the Actuator endpoints using that
@@ -97,6 +97,7 @@ docker run --name cna-graphite -p 80:80 -p 2003:2003 -p 8125:8125/udp hopsoft/gr
 > Graphite is used to store and render time-series data. In other words, you collect metrics and Graphite allows you to create pretty graphs easily.
 
 - 즉, 시계열 데이터를 저장하고 보여줌. 또한 메트릭스를 수집하고 예쁜 그래프를 쉽게 만들도록 도와줌.
+- [graphite 홈페이지](http://graphiteapp.org/)도 함께 참고
 - 각 포트에 대한 설명은 아래 표 참고
 
 포트  | 설명
@@ -124,3 +125,39 @@ export GRAPHITE_PORT=2003
     + 단점은 컨테이너가 실행된 후에 zsh 세션을 시작해야 한다는 것
 - udp 포트인 2003은 그대로 명시 (바뀔 가능성 매우 적음)
 - 환경 변수 반영을 위해 IntelliJ 재시작
+
+### `GraphiteReporter` @Bean 추가
+
+- graphite로 데이터를 보내주기 위한 @Bean으로 예상됨
+- 우선, gradle에 아래 의존성 추가
+
+```gradle
+compile('io.dropwizard.metrics:metrics-graphite')
+```
+
+- 아래와 같이 @Bean 추가
+
+```java
+@Bean
+GraphiteReporter graphiteReporter(
+        MetricRegistry registry,
+        @Value("${graphite.host}") String host,
+        @Value("${graphite.port}") int port) {
+
+    GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
+            .prefixedWith("reservations")
+            .build(new Graphite(host, port));
+    reporter.start(2, TimeUnit.SECONDS);
+    return reporter;
+}
+```
+
+- 코드를 간단히 살펴보면,
+    + `GraphiteReporter`는 Graphite에게 측정<sup>metric</sup> 값들을 보내주는 보고자
+    + `MetricRegistry`는 Spring Boot의 측정 값들이 등록되는 곳
+        * 이 `MetricRegistry`의 측정값들이 `/metrics` endpoint를 통해 노출됨
+        * [Spring Boot 레퍼런스 Dropwizard Metrics](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html#production-ready-dropwizard-metrics) 참조
+    + `Graphite`는 `GraphiteReporter`의 보고 대상
+    + 그리고 `GraphiteReporter`는 보고를 2분 간격으로 하도록 설정되어 실행됨
+    + 참고로, host와 port의 값은 `@Value`를 통해 각각 `GRAPHITE_HOST`와 `GRAPHITE_PORT`의 값으로 할당됨
+        * 설정값이 @Value에 할당되는 과정은 [Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) 문서를 참고
