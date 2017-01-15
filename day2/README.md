@@ -13,7 +13,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] `org.springframework.boot`:`spring-boot-starter-actuator` 추가
 - [x] 사용자가 정의한 `HealthIndicator`를 통해 `HealthEndpoint` 커스터마이징
 - [x] `./bin/graphite.sh` 실행
-- [ ] Configure two environment variables `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) (you may need to restart your IDE to see these new environment variables)
+- [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
 - [ ] Add a `GraphiteReporter` bean
 - [ ] Add `io.dropwizard.metrics`:`metrics-graphite`
 - [ ] Build an executable `.jar` (UNIX-specific) using the `<executable/>` configuration flag
@@ -99,6 +99,24 @@ docker run --name cna-graphite -p 80:80 -p 2003:2003 -p 8125:8125/udp hopsoft/gr
 - 번역하면, 시계열 데이터를 저장하고 보여줌. 메트릭스를 수집하고 예쁜 그래프를 쉽게 만들도록 도와줌.
 - docker 실행 시 udp 포트 매핑을 한 이유가, 바로 이 graphite에게 Actuator의 지표들을 주기적으로 보내주기 위한 것으로 예상됨
 - 그 외 80포트는 그래프를 보여주는 웹 화면 접속에 사용됨. 2003은 파악중.
-    + `localhost:80` 접속하여 확인함
+    + `localhost:80` 접속하면 확인할 수 있음
 
+### GRAPHITE_HOST 및 GRAPHITE_PORT 환경 변수 설정
 
+- 우선 `$DOCKER_IP`가 뭘까 생각해 봄
+    + graphite에 접근하기 위한 IP로 예상되며, 아래 명령어를 통해 IP 획득
+    + `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} cna-graphite`
+    + `172.17.0.2`인 것을 확인
+- 그리고 나서 `GRAPHITE_HOST` 및 `GRAPHITE_PORT`를 설정
+    + Zsh를 사용하고 있으므로 `vi ~/.zshrc`로 파일 열기
+    + 아래 두 라인 추가
+
+```shell
+export GRAPHITE_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cna-graphite)
+export GRAPHITE_PORT=2003
+```
+
+- 도커 컨테이너의 ip 변경이 잦으므로, 상대적으로 고정적인 컨테이너명(`./bin/graphite.sh` 참고)을 이용하여 변수에 실행문 할당
+    + 단점은 컨테이너가 실행된 후에 zsh 세션을 시작해야 한다는 것
+- udp 포트인 2003은 그대로 명시 (바뀔 가능성 매우 적음)
+- 환경 변수 반영을 위해 IntelliJ 재시작
