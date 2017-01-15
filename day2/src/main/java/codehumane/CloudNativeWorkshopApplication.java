@@ -10,6 +10,8 @@ import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,6 +28,16 @@ import java.util.Collection;
 
 @SpringBootApplication
 public class CloudNativeWorkshopApplication {
+
+    @Bean
+    HealthIndicator healthIndicator() {
+        return new HealthIndicator() {
+            @Override
+            public Health health() {
+                return Health.status("health.status.custom").build();
+            }
+        };
+    }
 
 	@Bean
 	CommandLineRunner runner(ReservationRepository rr) {
