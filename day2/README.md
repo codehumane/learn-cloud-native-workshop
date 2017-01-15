@@ -96,15 +96,19 @@ docker run --name cna-graphite -p 80:80 -p 2003:2003 -p 8125:8125/udp hopsoft/gr
 
 > Graphite is used to store and render time-series data. In other words, you collect metrics and Graphite allows you to create pretty graphs easily.
 
-- 번역하면, 시계열 데이터를 저장하고 보여줌. 메트릭스를 수집하고 예쁜 그래프를 쉽게 만들도록 도와줌.
-- docker 실행 시 udp 포트 매핑을 한 이유가, 바로 이 graphite에게 Actuator의 지표들을 주기적으로 보내주기 위한 것으로 예상됨
-- 그 외 80포트는 그래프를 보여주는 웹 화면 접속에 사용됨. 2003은 파악중.
-    + `localhost:80` 접속하면 확인할 수 있음
+- 즉, 시계열 데이터를 저장하고 보여줌. 또한 메트릭스를 수집하고 예쁜 그래프를 쉽게 만들도록 도와줌.
+- 각 포트에 대한 설명은 아래 표 참고
+
+포트  | 설명
+---- | ---
+80   | 그래프를 보여주는 웹 화면 접속에 사용됨
+2003 | Carbon의 [plaintext protocol](http://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol)로 데이터를 받기 위한 포트
+8125 | [StatsD](https://github.com/etsy/statsd/blob/master/docs/server.md)가 보내는 데이터를 받기 위한 포트
 
 ### GRAPHITE_HOST 및 GRAPHITE_PORT 환경 변수 설정
 
-- 우선 `$DOCKER_IP`가 뭘까 생각해 봄
-    + graphite에 접근하기 위한 IP로 예상되며, 아래 명령어를 통해 IP 획득
+- 우선 `$DOCKER_IP`를 구함
+    + 이게 뭘까를 잠시 고민. graphite에 접근하기 위한 IP로 예상되며, 아래 명령어를 통해 IP 획득
     + `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} cna-graphite`
     + `172.17.0.2`인 것을 확인
 - 그리고 나서 `GRAPHITE_HOST` 및 `GRAPHITE_PORT`를 설정
