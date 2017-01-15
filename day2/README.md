@@ -12,7 +12,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 - [x] `org.springframework.boot`:`spring-boot-starter-actuator` 추가
 - [x] 사용자가 정의한 `HealthIndicator`를 통해 `HealthEndpoint` 커스터마이징
-- [ ] Start `./bin/graphite.sh`
+- [x] `./bin/graphite.sh` 실행
 - [ ] Configure two environment variables `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) (you may need to restart your IDE to see these new environment variables)
 - [ ] Add a `GraphiteReporter` bean
 - [ ] Add `io.dropwizard.metrics`:`metrics-graphite`
@@ -76,5 +76,28 @@ HealthIndicator healthIndicator() {
 - 어플리케이션을 재시작하면 아래 2가지 변경 사항이 확인됨
     + endpoint 경로가 `/health` 대신 `/admin/health` 경로로 바뀜
     + `healthIndicator`의 `status` 항목 값이 `health.status.custom`로 바뀜
+
+### Graphite 실행
+
+- 아래의 shell 스크립트를 작성
+
+```shell
+#!/bin/bash
+docker run --name cna-graphite -p 80:80 -p 2003:2003 -p 8125:8125/udp hopsoft/graphite-statsd
+```
+
+- shell이 하는 일을 살펴보면,
+    + `cna-graphite`라는 컨테이너명으로 실행
+    + 컨테이너와 호스트의 포트를 tcp에 대해서는 80:80 및 2003:2003, udp에 대해서는 8125:8125으로 대응
+    + 실행할 이미지명은 `hopsoft/graphite-statsd`
+    + 이미지가 로컬에 없으니 dockerhub로부터 가져오리라 예상
+- graphite에 대한 설명은 [여기](https://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/)에 잘 나와있음(Spring Boot 문서에서도 이 글을 언급함). 설명 하나를 발췌하면,
+
+> Graphite is used to store and render time-series data. In other words, you collect metrics and Graphite allows you to create pretty graphs easily.
+
+- 번역하면, 시계열 데이터를 저장하고 보여줌. 메트릭스를 수집하고 예쁜 그래프를 쉽게 만들도록 도와줌.
+- docker 실행 시 udp 포트 매핑을 한 이유가, 바로 이 graphite에게 Actuator의 지표들을 주기적으로 보내주기 위한 것으로 예상됨
+- 그 외 80포트는 그래프를 보여주는 웹 화면 접속에 사용됨. 2003은 파악중.
+    + `localhost:80` 접속하여 확인함
 
 
