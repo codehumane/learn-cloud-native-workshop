@@ -25,19 +25,20 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ## 따라하기
 
-Josh Long의 Cloud Native Workshop [Hands-On 영상](https://youtu.be/fxB0tVnAi0I?t=2350)과 [Github repository](https://github.com/joshlong/cloud-native-workshop/tree/master/labs/2/reservation-service)를 기반으로 내용을 학습함.
+아래 2가지 리소스를 기반으로 학습을 진행함
+1. [Cloud Native Workshop Hands-On 영상](https://youtu.be/fxB0tVnAi0I?t=2350)
+2. [Cloud Native Workshop Github repository](https://github.com/joshlong/cloud-native-workshop/tree/master/labs/2/reservation-service)
 
-## Actuator Endpoints 추가
+### Actuator Endpoints 추가
 
-Actuator Endpoints는 어플리케이션과의 상호 작용 및 모니터링을 위한 방법을 제공한다. 자세한 설명은 [Spring Boot Endpoints](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html)를 참고.
-
-이 기능을 쓰고 싶다면 `build.gradle`의 `dependencies` 항목에 아래 라인 추가하면 된다.
-
-```
-compile('org.springframework.boot:spring-boot-starter-actuator')
-```
-
-서버를 시작한 후, URL 경로로 `/metrics`, `/health` 등의 endpoint로 접근할 수 있다. 접근 가능한 모든 endpoint를 보고 싶다면, `/actuator` 경로로 접근하면 된다. 몇 가지 주요 endpoint에 대한 설명은 다음과 같다.
+- Actuator Endpoints는 어플리케이션과의 상호 작용 및 모니터링을 위한 방법을 제공함
+- 자세한 설명은 [Spring Boot Endpoints](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html)를 참고
+- 이 기능을 쓰고 싶다면 `build.gradle`의 `dependencies` 항목에 아래 라인을 추가한다.
+    + ```compile('org.springframework.boot:spring-boot-starter-actuator')```
+    + classpath를 추가한 것만으로 사용이 가능함
+- 서버를 시작한 후, URL 경로로 `/metrics`, `/health` 등의 endpoint 접근이 가능해짐을 확인
+- 접근 가능한 모든 endpoint를 보고 싶다면, `/actuator` 경로로 접근
+- 주요 endpoint 몇 가지에 대한 설명은 다음과 같다.
 
 endpoint | 설명 | 기본값
 -------- | --- | ----
@@ -45,9 +46,4 @@ actuator | 다른 모든 endpoint를 HATEOAS 방식으로 보여줌 | true
 autoconfig | 모든 자동 설정<sup>auto-configuration</sup> 후보들을 적용/미적용 이유와 함께 보여줌 | true
 health | 시스템 헬스<sup>health</sup> 정보를 보여줌 | true
 trace | 시스템 트레이스(마지막 100개의 HTTP 요청) 정보 | true
-
-참고로, 기본적으로 제공되는 endpoint를 커스터마이징 할 수도 있고, 새로운 endpoint를 추가가 가능함.
-
-## HealthEndpoint 커스터마이징
-
 
