@@ -31,11 +31,12 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ### Actuator Endpoints 추가
 
-- Actuator Endpoints는 어플리케이션과의 상호 작용 및 모니터링을 위한 방법을 제공함
+- 어플리케이션과의 상호 작용 및 모니터링을 위한 방법을 제공함
 - 자세한 설명은 [Spring Boot Endpoints](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html)를 참고
-- 이 기능을 쓰고 싶다면 `build.gradle`의 `dependencies` 항목에 아래 라인을 추가한다.
-    + ```compile('org.springframework.boot:spring-boot-starter-actuator')```
-    + classpath를 추가한 것만으로 사용이 가능함
+- 이 기능을 쓰고 싶다면 `build.gradle`의 `dependencies` 항목에 아래 라인을 추가한다. classpath를 추가한 것만으로 사용이 가능함
+```
+compile('org.springframework.boot:spring-boot-starter-actuator')
+```
 - 서버를 시작한 후, URL 경로로 `/metrics`, `/health` 등의 endpoint 접근이 가능해짐을 확인
 - 접근 가능한 모든 endpoint를 보고 싶다면, `/actuator` 경로로 접근
 - 주요 endpoint 몇 가지에 대한 설명은 다음과 같다.
