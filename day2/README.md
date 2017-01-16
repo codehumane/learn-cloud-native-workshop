@@ -108,6 +108,7 @@ docker run --name cna-graphite -p 80:80 -p 2003:2003 -p 8125:8125/udp hopsoft/gr
 
 ### GRAPHITE_HOST 및 GRAPHITE_PORT 환경 변수 설정
 
+- 다음 단계에 등장하는 GraphiteReporter @Bean을 위해 graphite 접근 정보를 환경 변수에 설정
 - 우선 `$DOCKER_IP`를 구함
     + 이게 뭘까를 잠시 고민. graphite에 접근하기 위한 IP로 예상되며, 아래 명령어를 통해 IP 획득
     + `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} cna-graphite`
@@ -122,14 +123,11 @@ export GRAPHITE_HOST=localhost
 export GRAPHITE_PORT=2003
 ```
 
-- 도커 컨테이너의 ip 변경이 잦으므로, 상대적으로 고정적인 컨테이너명(`./bin/graphite.sh` 참고)을 이용하여 변수에 실행문 할당
-    + 단점은 컨테이너가 실행된 후에 zsh 세션을 시작해야 한다는 것
-- udp 포트인 2003은 그대로 명시 (바뀔 가능성 매우 적음)
-- 환경 변수 반영을 위해 IntelliJ 재시작
+- 환경 변수 반영을 위해 shell 세션과 IntelliJ 재시작
 
 ### GraphiteReporter @Bean 추가
 
-- graphite로 데이터를 보내주기 위한 @Bean으로 예상됨
+- GraphiteReporter는 graphite로 데이터를 보내주는 @Bean
 - 우선, gradle에 아래 의존성 추가
     + `compile('io.dropwizard.metrics:metrics-graphite')`
     + 원래의 Cloud Native Workshop에서는 이 작업이 GraphiteReporter 이후의 별도 단계로 빠져 있음
