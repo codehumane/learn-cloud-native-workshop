@@ -44,6 +44,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('io.dropwizard.metrics:metrics-graphite')
+    compile('org.springframework.data:spring-data-rest-hal-browser')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     runtime('com.h2database:h2')
 }

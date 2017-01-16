@@ -10,14 +10,14 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ## 전체 절차
 
-- [x] `org.springframework.boot`:`spring-boot-starter-actuator` 추가
+- [x] `org.springframework.boot:spring-boot-starter-actuator` 추가
 - [x] 사용자가 정의한 `HealthIndicator`를 통해 `HealthEndpoint` 커스터마이징
 - [x] `./bin/graphite.sh` 실행
 - [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
 - [x] `GraphiteReporter` @Bean 추가
-- [x] `io.dropwizard.metrics`:`metrics-graphite` 추가
+- [x] `io.dropwizard.metrics:metrics-graphite` 추가
 - [x] '완전히 실행 가능한' `.jar` 만들기
-- [ ] Add the HAL browser - `org.springframework.data`:`spring-data-rest-hal-browser` and view the Actuator endpoints using that
+- [x] HAL 브라우저로 Actuator endpoint 살펴보기
 - [ ] Configure Maven resource filtering and the Git commit ID plugin in the `pom.xml` in all existing and subsequent `pom.xml`s, or extract out a common parent `pom.xml` that all modules may extend.
 - [ ] Add `info.build.artifact=${project.artifactId}` and `info.build.version=${project.version}` to application.properties.
 - [ ] Introduce a new `@RepositoryEventHandler` and `@Component`. Provide handlers for `@HandleAfterCreate`, `@HandleAfterSave`, and `@HandleAfterDelete`. Extract common counters to a shared method
@@ -175,3 +175,20 @@ springBoot {
 - `find . -name '*.jar'` 명령어로 찾은 jar 실행
     + `./build/libs/cloud-native-workshop-DAY2.jar`
     + 실제로 실행됨을 확인할 수 있음
+
+### HAL 브라우저로 Actuator endpoint 살펴보기
+
+- Spring Data REST 문서의 [The HAL Browser](http://docs.spring.io/spring-data/rest/docs/current/reference/html/#_the_hal_browser0) 설명
+
+> The developer of the HAL spec has a useful application: the HAL Browser. It’s a web app that stirs in a little HAL-powered JavaScript. You can point it at any Spring Data REST API and use it to navigate the app and create new resources.
+>
+> Instead of pulling down the files, embedding them in your application, and crafting a Spring MVC controller to serve them up, all you need to do is add a single dependency.
+
+- 보다 자세한 내용은 아래 리소스 참고
+    + [HAL Brwoser](https://github.com/mikekelly/hal-browser)
+    + [HAL Specification](http://stateless.co/hal_specification.html)
+- 이제 직접 설정해보자.
+- 가장 먼저 그리고 끝으로, classpath에 `org.springframework.data:spring-data-rest-hal-browser`추가
+- Boot 재시작 후 `localhost:8080` 접근하여 웹앱을 확인
+- 기본 설정은 루트 경로에서 HAL Browser를 제공함
+- Explorer 항목에 `/admin`, `/admin/health` 등을 넣어보며 Actuator endpoint를 확인할 수 있음
