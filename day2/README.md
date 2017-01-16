@@ -15,7 +15,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] `./bin/graphite.sh` 실행
 - [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
 - [x] `GraphiteReporter` @Bean 추가
-- [ ] Add `io.dropwizard.metrics`:`metrics-graphite`
+- [x] `io.dropwizard.metrics`:`metrics-graphite` 추가
 - [ ] Build an executable `.jar` (UNIX-specific) using the `<executable/>` configuration flag
 - [ ] Add the HAL browser - `org.springframework.data`:`spring-data-rest-hal-browser` and view the Actuator endpoints using that
 - [ ] Configure Maven resource filtering and the Git commit ID plugin in the `pom.xml` in all existing and subsequent `pom.xml`s, or extract out a common parent `pom.xml` that all modules may extend.
@@ -126,15 +126,11 @@ export GRAPHITE_PORT=2003
 - udp 포트인 2003은 그대로 명시 (바뀔 가능성 매우 적음)
 - 환경 변수 반영을 위해 IntelliJ 재시작
 
-### `GraphiteReporter` @Bean 추가
+### GraphiteReporter @Bean 추가
 
 - graphite로 데이터를 보내주기 위한 @Bean으로 예상됨
 - 우선, gradle에 아래 의존성 추가
-
-```gradle
-compile('io.dropwizard.metrics:metrics-graphite')
-```
-
+    + `compile('io.dropwizard.metrics:metrics-graphite')`
 - 아래와 같이 @Bean 추가
 
 ```java
@@ -161,3 +157,8 @@ GraphiteReporter graphiteReporter(
     + 그리고 `GraphiteReporter`는 보고를 2분 간격으로 하도록 설정되어 실행됨
     + 참고로, host와 port의 값은 `@Value`를 통해 각각 `GRAPHITE_HOST`와 `GRAPHITE_PORT`의 값으로 할당됨
         * 설정값이 @Value에 할당되는 과정은 [Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) 문서를 참고
+
+### `io.dropwizard.metrics`:`metrics-graphite` 의존성 추가
+
+- 'GraphiteReporter @Bean 추가'에서 이미 진행한 내용이므로 생략
+
