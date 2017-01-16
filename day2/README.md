@@ -16,7 +16,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
 - [x] `GraphiteReporter` @Bean 추가
 - [x] `io.dropwizard.metrics`:`metrics-graphite` 추가
-- [ ] Build an executable `.jar` (UNIX-specific) using the `<executable/>` configuration flag
+- [x] `executable` 설정 플래그를 사용하여 '완전히 실행 가능한' `.jar` 만들기
 - [ ] Add the HAL browser - `org.springframework.data`:`spring-data-rest-hal-browser` and view the Actuator endpoints using that
 - [ ] Configure Maven resource filtering and the Git commit ID plugin in the `pom.xml` in all existing and subsequent `pom.xml`s, or extract out a common parent `pom.xml` that all modules may extend.
 - [ ] Add `info.build.artifact=${project.artifactId}` and `info.build.version=${project.version}` to application.properties.
@@ -162,3 +162,20 @@ GraphiteReporter graphiteReporter(
 
 - 'GraphiteReporter @Bean 추가'에서 이미 진행한 내용이므로 생략
 
+### `executable` 설정 플래그를 사용하여 '완전히 실행 가능한' `.jar` 만들기
+
+- `executable`을 이용하면, '완전히 실행 가능한<sup>fully executable</sup>` jar를 만들 수 있음
+- 즉, `java -jar ${jar명}` 명령어 대신, `./${jar명}`으로 어플리케이션이 실행 가능해짐
+- 자세한 내용은 [Installing Spring Boot applications](http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html) 참고
+- gradle 사용시에는 `build.gradle`에 아래 내용을 추가
+
+```gradle
+springBoot {
+    executable = true
+}
+```
+
+- 설정을 추가한 후 `gradle build` 명령어로 빌드 수행
+- `find . -name '*.jar'` 명령어로 찾은 jar 실행
+    + `./build/libs/cloud-native-workshop-DAY2.jar`
+    + 실제로 실행됨을 확인할 수 있음
