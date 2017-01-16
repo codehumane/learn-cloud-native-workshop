@@ -16,7 +16,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
 - [x] `GraphiteReporter` @Bean 추가
 - [x] `io.dropwizard.metrics`:`metrics-graphite` 추가
-- [x] `executable` 설정 플래그를 사용하여 '완전히 실행 가능한' `.jar` 만들기
+- [x] '완전히 실행 가능한' `.jar` 만들기
 - [ ] Add the HAL browser - `org.springframework.data`:`spring-data-rest-hal-browser` and view the Actuator endpoints using that
 - [ ] Configure Maven resource filtering and the Git commit ID plugin in the `pom.xml` in all existing and subsequent `pom.xml`s, or extract out a common parent `pom.xml` that all modules may extend.
 - [ ] Add `info.build.artifact=${project.artifactId}` and `info.build.version=${project.version}` to application.properties.
@@ -131,6 +131,7 @@ export GRAPHITE_PORT=2003
 - graphite로 데이터를 보내주기 위한 @Bean으로 예상됨
 - 우선, gradle에 아래 의존성 추가
     + `compile('io.dropwizard.metrics:metrics-graphite')`
+    + 원래의 Cloud Native Workshop에서는 이 작업이 GraphiteReporter 이후의 별도 단계로 빠져 있음
 - 아래와 같이 @Bean 추가
 
 ```java
@@ -158,13 +159,9 @@ GraphiteReporter graphiteReporter(
     + 참고로, host와 port의 값은 `@Value`를 통해 각각 `GRAPHITE_HOST`와 `GRAPHITE_PORT`의 값으로 할당됨
         * 설정값이 @Value에 할당되는 과정은 [Externalized Configuration](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) 문서를 참고
 
-### `io.dropwizard.metrics`:`metrics-graphite` 의존성 추가
+### '완전히 실행 가능한' `.jar` 만들기
 
-- 'GraphiteReporter @Bean 추가'에서 이미 진행한 내용이므로 생략
-
-### `executable` 설정 플래그를 사용하여 '완전히 실행 가능한' `.jar` 만들기
-
-- `executable`을 이용하면, '완전히 실행 가능한<sup>fully executable</sup>` jar를 만들 수 있음
+- `executable` 설정 플래그을 이용하면, '완전히 실행 가능한<sup>fully executable</sup>` jar를 만들 수 있음
 - 즉, `java -jar ${jar명}` 명령어 대신, `./${jar명}`으로 어플리케이션이 실행 가능해짐
 - 자세한 내용은 [Installing Spring Boot applications](http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html) 참고
 - gradle 사용시에는 `build.gradle`에 아래 내용을 추가
