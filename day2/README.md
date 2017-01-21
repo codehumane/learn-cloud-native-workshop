@@ -343,11 +343,5 @@ public static class ReservationEventHandler {
 }
 ```
 
-- 부트 서버를 실행하고 아래 그림과 같이 HAL 브라우저를 통해 `reservations` 리소스 하나를 수정
-
-![HAL 브라우저를 통한 리소스 수정](images/reservations-save-hal-browser.png)그림1. HAL 브라우저를 통한 리소스 수정
-
-- 다음 스크린샷과 같이 `reservations`의 `save` count 항목이 생기고 그래프로 표현됨을 확인
-
-![graphite에서 메트릭의 증감 확인](images/reservations-save-graphite.png)
-그림2. graphite에서 메트릭의 증감 확인
+- 부트 서버를 실행하고 HAL 브라우저를 통해 `reservations` 리소스 하나를 수정
+- Graphite의 좌측 트리메뉴에 `reservations`의 `save` count 항목이 생기고 그래프가 변화됨을 확인
