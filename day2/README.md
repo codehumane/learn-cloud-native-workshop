@@ -224,14 +224,14 @@ processResources {
 - `tokens`에서 콜론 좌측은 토큰명이고, 우측은 대체할 값을 가리킴
 - `processResources`의 기본 경로에 포함되는 `resources/application.properties` 파일을 아래와 같이 작성
 
-```
+```properties
 process.resources.project.name=@projectName@
 process.resources.project.version=@projectVersion@
 ```
 
 - 터미널에서 `gradle processResources`을 수행해 보면 `/build` 경로의 `application.properties`가 다음과 같이 바뀌어 있음을 확인
 
-```
+```properties
 process.resources.project.name=cloud-native-workshop
 process.resources.project.version=day2
 ```
@@ -245,7 +245,7 @@ process.resources.project.version=day2
 - [gradle plugin com.gorylenko.gradle-git-properties](https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties) 문서를 따라 아래 내용을 `build.gradle`에 추가
     + [Limitations of the plugins DSL](https://docs.gradle.org/current/userguide/plugins.html#plugins_dsl_limitations)을 참고하여, 순서를 비롯한 몇 가지 제약사항이 있음에 유의
 
-```
+```gradle
 plugins {
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
@@ -272,7 +272,7 @@ plugins {
 
 - 이 플러그인의 [Git Repository](https://github.com/n0mer/gradle-git-properties)로 가서 [에러나는 코드 부분](https://github.com/n0mer/gradle-git-properties/blob/master/src/main/groovy/com/gorylenko/GitPropertiesPlugin.groovy#L73)을 열어보면 대략 다음과 같은 코드가 보임
 
-```
+```gradle
 def repo = Grgit.open(dir: project.gitProperties.gitRepositoryRoot ?: project.rootProject.file('.'))
 ```
 
@@ -291,7 +291,7 @@ gitProperties {
 - 이 내용은 `info` entrypoint에서도 확인 가능하다. 해서, `admin/info`을 접근하면 관련 내용을 확인할 수 있음
 - 만약 actuator에서 `git.properties`의 모든 내용을 확인하고 싶다면 `application.properties`에 아래 내용 추가
 
-```
+```properties
 management.info.git.mode=full
 ```
 
