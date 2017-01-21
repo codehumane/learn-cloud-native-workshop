@@ -19,7 +19,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] '완전히 실행 가능한' `.jar` 만들기
 - [x] HAL 브라우저로 Actuator endpoint 살펴보기
 - [x] Resoure Filtering 적용
-- [ ] Git commit ID 플러그인 적용
+- [x] Git commit ID 플러그인 적용
 - [ ] Introduce a new `@RepositoryEventHandler` and `@Component`. Provide handlers for `@HandleAfterCreate`, `@HandleAfterSave`, and `@HandleAfterDelete`. Extract common counters to a shared method
 - [ ] Add a semantic metric using `CounterService` and observe the histogram in Graphite
 
@@ -240,3 +240,58 @@ process.resources.project.version=day2
 - 이는 또한 Actuator를 통해서도 확인 가능함
     + endpoint를 `admin/env`로 접근하여 `applicationConfig` 항목을 보면 값을 확인할 수 있음
 
+### Git commit ID 플러그인 적용
+
+- ['Git commit id plugin' Git Repository](https://github.com/ktoso/maven-git-commit-id-plugin/blob/master/README.md)에 가보면 이 플러그인의 가치와 사용 사례가 잘 나와 있음. 배포된 어플리케이션의 git revision 정보 제공은 꼭 필요한 일인데, 이 플러그인은 이를 설정만으로 가능하게 해줌
+- [gradle plugin com.gorylenko.gradle-git-properties](https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties) 문서를 따라 아래 내용을 `build.gradle`에 추가
+    + [Limitations of the plugins DSL](https://docs.gradle.org/current/userguide/plugins.html#plugins_dsl_limitations)을 참고하여, 순서를 비롯한 몇 가지 제약사항이 있음에 유의
+
+```
+plugins {
+    id "com.gorylenko.gradle-git-properties" version "1.4.17"
+}
+```
+
+- 확인을 위해 터미널에서 `gradle generateGitProperties` 수행
+- 으헛, 안된다. `gradle generateGitProperties --debug --stacktrace`로 다시 실행하여 오류 내용을 확인. 그 중에서도 관련 있는 부분을 보면,
+
+```
+[ERROR] [org.gradle.BuildExceptionReporter] Caused by: org.eclipse.jgit.errors.RepositoryNotFoundException: repository not found: /Users/codehumane/dev/github/codehumane/learning/cloud-native-workshop/day2
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.eclipse.jgit.lib.BaseRepositoryBuilder.build(BaseRepositoryBuilder.java:581)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.eclipse.jgit.api.Git.open(Git.java:116)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.eclipse.jgit.api.Git.open(Git.java:99)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.eclipse.jgit.api.Git$open.call(Unknown Source)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.ajoberstar.grgit.operation.OpenOp.call(OpenOp.groovy:84)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.ajoberstar.grgit.operation.OpenOp.call(OpenOp.groovy)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at java_util_concurrent_Callable$call.call(Unknown Source)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.ajoberstar.grgit.util.OpSyntaxUtil.tryOp(OpSyntaxUtil.groovy:45)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.ajoberstar.grgit.Grgit$__clinit__closure1.doCall(Grgit.groovy:193)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at com.gorylenko.GitPropertiesPlugin$GenerateGitPropertiesTask.generate(GitPropertiesPlugin.groovy:76)
+[ERROR] [org.gradle.BuildExceptionReporter] 	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:75)
+[ERROR] [org.gradle.BuildExceptionReporter] 	... 64 more
+```
+
+- 이 플러그인의 [Git Repository](https://github.com/n0mer/gradle-git-properties)로 가서 [에러나는 코드 부분](https://github.com/n0mer/gradle-git-properties/blob/master/src/main/groovy/com/gorylenko/GitPropertiesPlugin.groovy#L73)을 열어보면 대략 다음과 같은 코드가 보임
+
+```
+def repo = Grgit.open(dir: project.gitProperties.gitRepositoryRoot ?: project.rootProject.file('.'))
+```
+
+- 현재 프로젝트의 최상위 경로가 git repository의 root가 아니어서 발생하는 문제임을 예상할 수 있음
+    + 좀 더 자세한 원인은 `jgit`의 [`BaseRepositoryBuilder`](https://github.com/spearce/jgit/blob/master/org.eclipse.jgit/src/org/eclipse/jgit/lib/BaseRepositoryBuilder.java) 참고
+- `build.gradle`에 아래 내용을 추가한다.
+
+```gradle
+gitProperties {
+    gitRepositoryRoot = new File('../../../')
+}
+```
+
+- 다시 한 번 터미널에서 `gradle generateGitProperties` 수행
+- `cat ./build/resources/main/git.properties`을 통해 git 정보가 생성되어 있음을 확인할 수 있음
+- 이 내용은 `info` entrypoint에서도 확인 가능하다. 해서, `admin/info`을 접근하면 관련 내용을 확인할 수 있음
+- 만약 actuator에서 `git.properties`의 모든 내용을 확인하고 싶다면 `application.properties`에 아래 내용 추가
+
+```
+management.info.git.mode=full
+```
