@@ -18,8 +18,8 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] `io.dropwizard.metrics:metrics-graphite` 추가
 - [x] '완전히 실행 가능한' `.jar` 만들기
 - [x] HAL 브라우저로 Actuator endpoint 살펴보기
-- [ ] Configure Maven resource filtering and the Git commit ID plugin in the `pom.xml` in all existing and subsequent `pom.xml`s, or extract out a common parent `pom.xml` that all modules may extend.
-- [ ] Add `info.build.artifact=${project.artifactId}` and `info.build.version=${project.version}` to application.properties.
+- [x] Resoure Filtering 적용
+- [ ] Git commit ID 플러그인 적용
 - [ ] Introduce a new `@RepositoryEventHandler` and `@Component`. Provide handlers for `@HandleAfterCreate`, `@HandleAfterSave`, and `@HandleAfterDelete`. Extract common counters to a shared method
 - [ ] Add a semantic metric using `CounterService` and observe the histogram in Graphite
 
@@ -192,3 +192,51 @@ springBoot {
 - Boot 재시작 후 `localhost:8080` 접근하여 웹앱을 확인
 - 기본 설정은 루트 경로에서 HAL Browser를 제공함
 - Explorer 항목에 `/admin`, `/admin/health` 등을 넣어보며 Actuator endpoint를 확인할 수 있음
+
+### Resource Filtering
+
+- 여기서부터는 이해를 돕기 위해 Cloud Native Workshop과는 절차를 조금 다르게 진행하려 하려함
+- 우선은 Resource Filtering부터 시작할건데, 이는 원래 과정의 다음 2개 단계에 해당함
+    + Configure Maven resource filtering and the Git commit ID plugin in the `pom.xml` in all existing and subsequent `pom.xml`s, or extract out a common parent `pom.xml` that all modules may extend.
+    + Add `info.build.artifact=${project.artifactId}` and `info.build.version=${project.version}` to application.properties.
+    + 하지만 git commit ID 플러그인에 대해서는 다음 단계에서 소개할 예정
+- Resource Filtering 소개는 아래를 참고
+
+> Variables can be included in your resources. These variables, denoted by the ${...} delimiters, can come from the system properties, your project properties, from your filter resources and from the command line.Variables can be included in your resources. These variables, denoted by the ${...} delimiters, can come from the system properties, your project properties, from your filter resources and from the command line.
+>
+> \- [Apache Maven Resource Plugin - Filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html)
+
+- Gradle에서는 Resource Filtering이 없음
+- 대신, `processResources`라는 task가 존재함
+    + [Migrating a Maven Build to Gradle](https://gradle.org/migrating-a-maven-build-to-gradle/https://gradle.org/migrating-a-maven-build-to-gradle/) 참고
+- 상세한 설명이 담긴 문서는 [여기](https://dzone.com/articles/resource-filtering-gradle)를 참고
+- 확인을 위해 `build.gradle` 파일을 먼저 아래와 같이 작성
+
+```gradle
+import org.apache.tools.ant.filters.ReplaceTokens
+processResources {
+    filter ReplaceTokens, tokens: [
+            "projectName": project.name,
+            "projectVersion": project.version
+    ]
+}
+```
+
+- `tokens`에서 콜론 좌측은 토큰명이고, 우측은 대체할 값을 가리킴
+- `processResources`의 기본 경로에 포함되는 `resources/application.properties` 파일을 아래와 같이 작성
+
+```
+process.resources.project.name=@projectName@
+process.resources.project.version=@projectVersion@
+```
+
+- 터미널에서 `gradle processResources`을 수행해 보면 `/build` 경로의 `application.properties`가 다음과 같이 바뀌어 있음을 확인
+
+```
+process.resources.project.name=cloud-native-workshop
+process.resources.project.version=day2
+```
+
+- 이는 또한 Actuator를 통해서도 확인 가능함
+    + endpoint를 `admin/env`로 접근하여 `applicationConfig` 항목을 보면 값을 확인할 수 있음
+

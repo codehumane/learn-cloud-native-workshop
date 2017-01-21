@@ -1,3 +1,5 @@
+project.version = 'day2'
+
 buildscript {
     ext {
         springBootVersion = '1.4.3.RELEASE'
@@ -15,12 +17,20 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 jar {
-    baseName = 'cloud-native-workshop'
-    version = 'DAY2'
+    baseName = "${project.name}"
+    version = "${project.version}"
 }
 
 springBoot {
     executable = true
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+processResources {
+    filter ReplaceTokens, tokens: [
+            "projectName": project.name,
+            "projectVersion": project.version
+    ]
 }
 
 sourceCompatibility = 1.8
