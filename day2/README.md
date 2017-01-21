@@ -20,8 +20,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] HAL 브라우저로 Actuator endpoint 살펴보기
 - [x] Resoure Filtering 적용
 - [x] Git commit ID 플러그인 적용
-- [ ] Introduce a new `@RepositoryEventHandler` and `@Component`. Provide handlers for `@HandleAfterCreate`, `@HandleAfterSave`, and `@HandleAfterDelete`. Extract common counters to a shared method
-- [ ] Add a semantic metric using `CounterService` and observe the histogram in Graphite
+- [x] `@RepositoryEventHandler`와 `CounterService`로 Graphite에게 메트릭 보내기
 
 ## 따라하기
 
@@ -295,3 +294,60 @@ gitProperties {
 ```
 management.info.git.mode=full
 ```
+
+### `@RepositoryEventHandler`와 `CounterService`로 Graphite에게 메트릭 보내기
+
+- [`Entity`의 이벤트를 처리하는 방법](http://docs.spring.io/spring-data/rest/docs/2.0.x/reference/html/events-chapter.html) 중의 하나로 `@RepositoryEventHandler` 애노테이션이 존재함
+- 이벤트의 종류는 6가지임
+    + BeforeCreateEvent
+    + AfterCreateEvent
+    + BeforeSaveEvent
+    + AfterSaveEvent
+    + BeforeLinkSaveEvent
+    + AfterLinkSaveEvent
+    + BeforeDeleteEvent
+    + AfterDeleteEvent
+- [자신만의 메트릭을 기록](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html)하기 위해 [`CounterService`](https://github.com/spring-projects/spring-boot/blob/v1.4.3.RELEASE/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/CounterService.java)나 [`GaugeService`](https://github.com/spring-projects/spring-boot/blob/v1.4.3.RELEASE/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/metrics/GaugeService.java)를 이용할 수 있음
+- 메트릭의 이름으로는 어느 것이나 사용가능하지만, 메트릭을 보내는 툴의 가이드라인을 따르는 것이 좋음
+    + Graphite는 여기 [가이드라인](https://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/)을 참고
+- day1에서 작성했던 `Resrevation`의 생성과 소멸을 Graphite로 전송하기 위해 아래 코드를 작성
+
+```java
+@Component
+@RepositoryEventHandler
+public static class ReservationEventHandler {
+
+    @Autowired
+    private CounterService counterService;
+
+    @HandleAfterCreate
+    public void create(Reservation p) {
+        count("reservations.create", p);
+    }
+
+    @HandleAfterSave
+    public void save(Reservation p) {
+        count("reservations.save", p);
+        count("reservations." + p.getId() + ".save", p);
+    }
+
+    @HandleAfterDelete
+    public void delete(Reservation p) {
+        count("reservations.delete", p);
+    }
+
+    protected void count(String evt, Reservation p) {
+        this.counterService.increment(evt);
+        this.counterService.increment("meter." + evt);
+    }
+}
+```
+
+- 부트 서버를 실행하고 아래 그림과 같이 HAL 브라우저를 통해 `reservations` 리소스 하나를 수정
+
+![HAL 브라우저를 통한 리소스 수정](images/reservations-save-hal-browser.png)그림1. HAL 브라우저를 통한 리소스 수정
+
+- 다음 스크린샷과 같이 `reservations`의 `save` count 항목이 생기고 그래프로 표현됨을 확인
+
+![graphite에서 메트릭의 증감 확인](images/reservations-save-graphite.png)
+그림2. graphite에서 메트릭의 증감 확인
