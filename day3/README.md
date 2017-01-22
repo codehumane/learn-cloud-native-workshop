@@ -11,7 +11,7 @@ Spring Cloud Config Server를 활용하여 어플리케이션 설정을 중앙�
 ## 전체 절차
 
 - [x] Config Server 구축
-- [ ] 
+- [x] Config Client 구축
 
 ## 참고 리소스
 
@@ -69,3 +69,63 @@ dependencyManagement {
 }
 ```
 
+### Config Client 구축
+
+- 가장 먼저 할일은 `reservation-service`의 `pom.xml`에 아래 내용을 추가하는 것
+
+```xml
+<dependencyManagement>
+    <dependencies>
+      ...
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-parent</artifactId>
+        <version>Brixton.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+- 하지만 여기서는 gradle 설정이 필요하므로, `pom.xml`에 추가되는 내용을 먼저 파악하기로 함
+- maven의 `dependencyManagement`란 의존성 정보를 중앙화<sup>centralizing</sup>하는 메커니즘으로, Apache Maven Project의 [Introduction to the Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Management)에 예제와 함께 잘 설명되어 있음
+- gradle에서는 이를 [Dependency management plugin](https://github.com/spring-gradle-plugins/dependency-management-plugin)이 지원하고 있으며, [Importing a Maven bom](https://github.com/spring-gradle-plugins/dependency-management-plugin) 부분을 참고하면 됨
+- 그래서 작성한 내용은 아래오 같음
+
+```gradle
+dependencyManagement {
+    dependencies {
+        dependency 'org.springframework.cloud:spring-cloud-starter-parent:Brixton.RELEASE'
+    }
+}
+```
+
+- 그리고 나서, `build.gradle`의 `dependencies` 항목에 `compile('org.springframework.cloud:spring-cloud-starter-config')` 추가
+- `application.properties`가 위치하고 있는 디렉토리에 `boostrap.properties` 파일을 생성하고, `application.properties`는 제거
+- 제거된 `application.properties` 대신, Config Server로부터 관련 정보를 얻어오도록 할 차례
+- `bootstrap.properties`에 아래 내용을 추가
+
+```properties
+spring.application.name=reservation-service
+spring.cloud.config.uri=http://localhost:8888
+```
+
+- [Spring Cloud Config > Quickstart](https://cloud.spring.io/spring-cloud-config/#quick-start)를 보고 `reservation-service`의 `build.gradle`을 좀 더 보완
+- `reservation-service`를 시작하면 아래와 같은 오류와 함께 실행되지 않음
+
+```
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'message' in string value "${message}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:174) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:219) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:193) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$2.resolveStringValue(PropertySourcesPlaceholderConfigurer.java:172) ~[spring-context-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:813) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1079) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1059) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:589) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:88) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues(AutowiredAnnotationBeanPostProcessor.java:370) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
+	... 31 common frames omitted
+```
