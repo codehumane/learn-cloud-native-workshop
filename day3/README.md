@@ -1,28 +1,47 @@
-# Making a Spring Boot application Production Ready
+# The Config Server
 
-Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-native-workshop#2-making-a-spring-boot-application-production-ready)' 중 2일차인 '[Making a Spring Boot application Production Ready](https://github.com/joshlong/cloud-native-workshop#2-making-a-spring-boot-application-production-ready)' 과정을 따라해 보았다. 간단히 기억할 만한 것들을 문서로 함께 기록함.
+Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-native-workshop#2-making-a-spring-boot-application-production-ready)' 중 3일차인 '[The Config Server](https://github.com/joshlong/cloud-native-workshop#3-the-config-server)' 과정을 따라해 보았다. 간단히 기억할 만한 것들을 문서로 함께 기록함.
 
 ## 과정 간단 소개
 
-> In this lab, we'll look at how Spring Boot is optimized for the continuous delivery of applications into production.
+> The 12 Factor manifesto talks about externalizing that which changes from one environment to another - hosts, locators, passwords, etc. - from the application itself. Spring Boot readily supports this pattern, but it's not enough. In this lab, we'll look at how to centralize, externalize, and dynamically update application configuration with the Spring Cloud Config Server.
 
-코드의 완성과 프로덕션 반영은 완전히 다르며, 이 사이의 여정은 어느 누구의 예상보다 길다고 한다. 이 과정에서는 Spring Boot가 프로덕션 환경에서의 지속적 배포를 어떻게 돕는지 살펴본다.
+Spring Cloud Config Server를 활용하여 어플리케이션 설정을 중앙화<sup>centralize</sup>, 외부화<sup>externalize</sup>, 동적으로 업데이트<sup>dynamically update</sup> 하는 방법에 대해 알아본다. [12 Factor manifesto의 한글 버전](https://12factor.net/ko/)도 존재한다. 함께 참고하자.
+
 
 ## 전체 절차
 
-- [x] `org.springframework.boot:spring-boot-starter-actuator` 추가
-- [x] 사용자가 정의한 `HealthIndicator`를 통해 `HealthEndpoint` 커스터마이징
-- [x] `./bin/graphite.sh` 실행
-- [x] 2개의 환경 변수 `GRAPHITE_HOST` (`export GRAPHITE_HOST="$DOCKER_IP"`) and `GRAPHITE_PORT` (`2003`) 설정 (변수 설정 후 IDE를 재시작해야 할지도 모름)
-- [x] `GraphiteReporter` @Bean 추가
-- [x] `io.dropwizard.metrics:metrics-graphite` 추가
-- [x] '완전히 실행 가능한' `.jar` 만들기
-- [x] HAL 브라우저로 Actuator endpoint 살펴보기
-- [x] Resoure Filtering 적용
-- [x] Git commit ID 플러그인 적용
-- [x] `@RepositoryEventHandler`와 `CounterService`로 Graphite에게 메트릭 보내기
+- [x] 하나씩 과정을 밟아나가며 기록
+- [ ] 
 
-## 따라하기
+## 참고 리소스
+
+- [Cloud Native Workshop > The Config Server - README](https://github.com/joshlong/cloud-native-workshop#3-the-config-server)
+- [Cloud Native Workshop > The Config Server - Git Repository](https://github.com/joshlong/cloud-native-workshop/tree/master/labs/3)
+
+## Config Server 구축
+
+- [Spring Initializr](http://start.spring.io/)에 접근하여 프로젝트 생성
+    + Group: `codehumane`
+    + Artifact: `config-service`
+    + Project: Gradle
+    + Spring Boot Version: 1.4.3
+    + Dependencies: `Config Server`
+- 
+
+
+
+In the Config Server's application.properties, specify that it should run on port 8888 (server.port=8888) and that it should manage the Git repository of configuration that lives in the root directory of the git clone'd configuration. (spring.cloud.config.server.git.uri=...).
+
+Add @EnableConfigServer to the config-service's root application
+
+Add server.port=8888 to the application.properties to ensure that the Config Server is running on the right port for service to find it.
+
+Add the Spring Cloud BOM (you can copy it from the Config Server) to the reservation-service.
+
+<!--TODO 생략하고 진행함 -->
+You should git clone the Git repository for this workshop - https://github.com/joshlong/bootiful-microservices-config
+
 
 아래 3가지 리소스를 기반으로 학습을 진행함
 
