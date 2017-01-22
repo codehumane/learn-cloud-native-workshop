@@ -40,7 +40,7 @@ processResources {
 }
 
 gitProperties {
-    gitRepositoryRoot = new File('../../../') // git repository root 경로 명
+    gitRepositoryRoot = new File('../../../../') // git repository root 경로 명
 }
 
 sourceCompatibility = 1.8
@@ -67,4 +67,10 @@ dependencies {
     compile('org.springframework.data:spring-data-rest-hal-browser')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     runtime('com.h2database:h2')
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Camden.SR4"
+    }
 }
