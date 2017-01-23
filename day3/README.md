@@ -17,6 +17,7 @@ Spring Cloud Config Server를 활용하여 어플리케이션 설정을 중앙�
 
 - [Cloud Native Workshop > The Config Server - README](https://github.com/joshlong/cloud-native-workshop#3-the-config-server)
 - [Cloud Native Workshop > The Config Server - Git Repository](https://github.com/joshlong/cloud-native-workshop/tree/master/labs/3)
+- [Spring Cloud Config > Quickstart](https://cloud.spring.io/spring-cloud-config/)
 
 ## 따라하기
 
@@ -59,16 +60,6 @@ public class ConfigServiceApplication {
 }
 ```
 
-- Config Server를 참고하여 아래와 같이 reservation-service에 Spring Cloud BOM 추가
-
-```gradle
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Camden.SR4"
-    }
-}
-```
-
 ### Config Client 구축
 
 - 가장 먼저 할일은 `reservation-service`의 `pom.xml`에 아래 내용을 추가하는 것
@@ -91,41 +82,57 @@ dependencyManagement {
 - 하지만 여기서는 gradle 설정이 필요하므로, `pom.xml`에 추가되는 내용을 먼저 파악하기로 함
 - maven의 `dependencyManagement`란 의존성 정보를 중앙화<sup>centralizing</sup>하는 메커니즘으로, Apache Maven Project의 [Introduction to the Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Management)에 예제와 함께 잘 설명되어 있음
 - gradle에서는 이를 [Dependency management plugin](https://github.com/spring-gradle-plugins/dependency-management-plugin)이 지원하고 있으며, [Importing a Maven bom](https://github.com/spring-gradle-plugins/dependency-management-plugin) 부분을 참고하면 됨
-- 그래서 작성한 내용은 아래오 같음
+- 더불어, [Spring Cloud Config > Quickstart](https://cloud.spring.io/spring-cloud-config/)를 함께 참고하여 작성한 내용은 아래와 같음
 
 ```gradle
+apply plugin: "io.spring.dependency-management"
+
 dependencyManagement {
     dependencies {
-        dependency 'org.springframework.cloud:spring-cloud-starter-parent:Brixton.RELEASE'
+        dependency mavenBom 'org.springframework.cloud:spring-cloud-config:1.2.3.BUILD-SNAPSHOT'
     }
+}
+
+repositories {
+    maven { url 'https://repo.spring.io/libs-snapshot' }
+}
+dependencies {
+    compile('org.springframework.cloud:spring-cloud-starter-config')
 }
 ```
 
-- 그리고 나서, `build.gradle`의 `dependencies` 항목에 `compile('org.springframework.cloud:spring-cloud-starter-config')` 추가
-- `application.properties`가 위치하고 있는 디렉토리에 `boostrap.properties` 파일을 생성하고, `application.properties`는 제거
-- 제거된 `application.properties` 대신, Config Server로부터 관련 정보를 얻어오도록 할 차례
-- `bootstrap.properties`에 아래 내용을 추가
+- 그리고 나서, `application.properties`의 내용을 [config git repository](https://github.com/codehumane/spring-cloud-configs/blob/master/reservation-service.properties)로 옮기고, 대신 아래 내용으로 대체
+    + 원래 과정에서는 `bootstrap.properties`라는 파일로 대체하라고 함
+    + 하지만, 이 경우 `spring.application.name`의 값이 잘 읽히지 않는 문제가 발생함
+    + `application.properties` 파일로 하면 정상 작동함
 
 ```properties
 spring.application.name=reservation-service
 spring.cloud.config.uri=http://localhost:8888
 ```
 
-- [Spring Cloud Config > Quickstart](https://cloud.spring.io/spring-cloud-config/#quick-start)를 보고 `reservation-service`의 `build.gradle`을 좀 더 보완
-- `reservation-service`를 시작하면 아래와 같은 오류와 함께 실행되지 않음
+- `spring.application.name`으로 명시한 것은 [config git repository](https://github.com/codehumane/spring-cloud-configs/blob/master/reservation-service.properties)에서 `reservation-service.properties`를 읽겠다는 의미
+- `spring.cloud.config.uri`는 config server의 uri를 가리킴
+- 이제 config client에서 설정 값을 잘 불러오는지 확인하기 위해 아래의 코드를 작성
 
+```java
+@RefreshScope
+@RestController
+class MessageRestController {
+
+    @Value("${message}")
+    private String message;
+
+    @RequestMapping("/message")
+    String getMessage() {
+        return this.message;
+    }
+}
 ```
-Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'message' in string value "${message}"
-	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:174) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:219) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:193) ~[spring-core-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$2.resolveStringValue(PropertySourcesPlaceholderConfigurer.java:172) ~[spring-context-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:813) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1079) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1059) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:589) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:88) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues(AutowiredAnnotationBeanPostProcessor.java:370) ~[spring-beans-4.3.4.RELEASE.jar:4.3.4.RELEASE]
-	... 31 common frames omitted
+
+- 이제 서버를 띄우고 `/message`로 접근해 보면 [config git repository](https://github.com/codehumane/spring-cloud-configs/blob/master/reservation-service.properties)에서 설정한 값을 확인할 수 있음
+- @RefreshScope의 의미는 변경되는 값이 있으면 반영하겠다는 의미이며, 아래의 endpoint 호출로 반영 가능함
+
+```shell
+curl -X POST http://localhost:8080/admin/refresh
 ```
