@@ -1,0 +1,79 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.3.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.4.17"
+        classpath "io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE"
+    }
+}
+
+project.version = 'day3'
+project.description = 'The Config Server'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'com.gorylenko.gradle-git-properties'
+apply plugin: "io.spring.dependency-management"
+
+jar {
+    baseName = "${project.name}"
+    version = "${project.version}"
+}
+
+springBoot {
+    executable = true
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+processResources {
+    filter ReplaceTokens, tokens: [
+            "projectName": project.name,
+            "projectVersion": project.version
+    ]
+}
+
+gitProperties {
+    gitRepositoryRoot = new File('../../../../') // git repository root 경로 명
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencyManagement {
+    imports {
+        mavenBom 'com.vaadin:vaadin-bom:7.6.4'
+        mavenBom 'org.springframework.cloud:spring-cloud-config:1.2.3.BUILD-SNAPSHOT'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url {
+            "http://oss.sonatype.org/content/repositories/vaadin-snapshots/"
+            'https://repo.spring.io/libs-snapshot'
+        }
+    }
+}
+
+dependencies {
+    compile("com.vaadin:vaadin-spring-boot-starter:1.0.0")
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-data-rest')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('io.dropwizard.metrics:metrics-graphite')
+    compile('org.springframework.data:spring-data-rest-hal-browser')
+    compile('org.springframework.cloud:spring-cloud-starter-config')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    runtime('com.h2database:h2')
+}
