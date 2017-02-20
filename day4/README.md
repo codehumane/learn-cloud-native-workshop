@@ -9,7 +9,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 ## 전체 절차
 
 - [x] 프로젝트 초기화
-- [ ] Make sure this module also talks to the Config Server as described in the last lab by adding the org.springframework.cloud:spring-cloud-starter-config.
+- [x] Config Server 사용하도록 설정
 - [ ] add org.springframework.cloud:spring-cloud-starter-eureka to the reservation-service
 - [ ] Add @EnableDiscoveryClient to the reservation-service's DemoApplication and restart the process, and then confirm its appearance in the Eureka Server at http://localhost:8761
 - [ ] Demonstrate using the DiscoveryClient API
@@ -27,3 +27,27 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - Group명은 `codehumane`, Artifact는 `eureka-service`, Dependencies는 `Eureka Server` 추가
 - `Eureka Server`의 추가는 `org.springframework.cloud:spring-cloud-starter-eureka-server` 의존성 추가를 가리킴
 - `EurekaServiceApplication`에 `@EnableEurekaServer` 추가
+
+## Config Server 사용하도록 설정
+
+- Config Server를 사용할 수 있도록 아래 내용 추가
+
+```gradle
+
+apply plugin: "io.spring.dependency-management"
+
+repositories {
+	maven { url 'https://repo.spring.io/libs-snapshot' }
+}
+
+dependencies {
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+}
+
+dependencyManagement {
+	imports {
+		mavenBom 'org.springframework.cloud:spring-cloud-config:1.2.3.BUILD-SNAPSHOT'
+	}
+}
+```
+
