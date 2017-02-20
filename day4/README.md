@@ -8,7 +8,7 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ## 전체 절차
 
-- [ ] Go to the Spring Initializr, select the Eureka Server (this brings in org.springframework.cloud:spring-cloud-starter-eureka-server) checkbox, name it eureka-service and then add @EnableEurekaServer to the DemoApplication class.
+- [x] 프로젝트 초기화
 - [ ] Make sure this module also talks to the Config Server as described in the last lab by adding the org.springframework.cloud:spring-cloud-starter-config.
 - [ ] add org.springframework.cloud:spring-cloud-starter-eureka to the reservation-service
 - [ ] Add @EnableDiscoveryClient to the reservation-service's DemoApplication and restart the process, and then confirm its appearance in the Eureka Server at http://localhost:8761
@@ -19,8 +19,11 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ## 따라하기
 
-TBD
+전체 절차를 하나씩 따라하며 기록
 
-## 참고 리소스
+## 프로젝트 초기화
 
-TBD
+- [Spring Initializr](http://start.spring.io/) 접속
+- Group명은 `codehumane`, Artifact는 `eureka-service`, Dependencies는 `Eureka Server` 추가
+- `Eureka Server`의 추가는 `org.springframework.cloud:spring-cloud-starter-eureka-server` 의존성 추가를 가리킴
+- `EurekaServiceApplication`에 `@EnableEurekaServer` 추가
