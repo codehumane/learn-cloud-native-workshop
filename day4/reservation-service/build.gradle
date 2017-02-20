@@ -42,7 +42,7 @@ processResources {
 }
 
 gitProperties {
-    gitRepositoryRoot = new File('../../../../') // git repository root 경로 명
+    gitRepositoryRoot = new File('../../') // git repository root 경로 명
 }
 
 sourceCompatibility = 1.8
@@ -74,6 +74,7 @@ dependencies {
     compile('io.dropwizard.metrics:metrics-graphite')
     compile('org.springframework.data:spring-data-rest-hal-browser')
     compile('org.springframework.cloud:spring-cloud-starter-config')
+    compile('org.springframework.cloud:spring-cloud-starter-eureka')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     runtime('com.h2database:h2')
 }
