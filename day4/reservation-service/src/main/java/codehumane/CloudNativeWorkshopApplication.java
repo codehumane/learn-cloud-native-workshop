@@ -16,6 +16,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
+@EnableDiscoveryClient
 public class CloudNativeWorkshopApplication {
 
     @Bean
