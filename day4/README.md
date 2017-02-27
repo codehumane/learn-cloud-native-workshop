@@ -30,26 +30,8 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 
 ## Config Server 사용하도록 설정
 
-- Config Server를 사용할 수 있도록 아래 내용 추가
-
-```gradle
-
-apply plugin: "io.spring.dependency-management"
-
-repositories {
-	maven { url 'https://repo.spring.io/libs-snapshot' }
-}
-
-dependencies {
-	compile('org.springframework.cloud:spring-cloud-starter-config')
-}
-
-dependencyManagement {
-	imports {
-		mavenBom 'org.springframework.cloud:spring-cloud-config:1.2.3.BUILD-SNAPSHOT'
-	}
-}
-```
+- `build.gradle`에 일일이 추가하는 대신, Spring Initializr에서 `Config Client`도 함께 지정
+- 완성된 `build.gradle`은 [여기](https://github.com/codehumane/learn-cloud-native-workshop/blob/master/day4/eureka-service/build.gradle) 참고
 
 ## `reservation-service`의 Eureka Server 사용을 위한 의존성 추가
 
@@ -65,5 +47,4 @@ depdendencies {
 
 - `reservation-service`의 Main 클래스에 `@EnableDiscoveryClient` 추가
 - 프로세스 시작
-- `http://localhost:8761`(Eureka Server)에 접속하여 `RESERVATION-SERVICE`가 나타남을 확인
-
+- `http://localhost:8761`(Eureka Server)에 접속하면, `RESERVATION-SERVICE`가 나타남을 확인할 수 있음
