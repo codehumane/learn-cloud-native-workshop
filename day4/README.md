@@ -12,10 +12,8 @@ Josh Long의  '[Cloud Native Java Workshop](https://github.com/joshlong/cloud-na
 - [x] Config Server 사용하도록 설정
 - [x] `reservation-service`의 Eureka Server 사용을 위한 의존성 추가
 - [x] @EnableDiscoveryClient 추가 및 확인
-- [ ] Demonstrate using the DiscoveryClient API
-- [ ] Use the Spring Initializr, setup a new module, reservation-client, that uses the Config Client (org.springframework.cloud:spring-cloud-starter-config), Eureka Discovery (org.springframework.cloud:spring-cloud-starter-eureka), and Web (org.springframework.boot:spring-boot-starter-web).
-- [ ] Create a bootstrap.properties, just as with the other modules, but name this one reservation-client.
-- [ ] Create a CommandLineRunner that uses the DiscoveryClient to look up other services programmatically
+- [x] Spring Initializr를 이용하여 `reservation-client`라는 새로운 모듈 생성 및 설정
+- [x] `DiscoveryClient` api를 이용한 다른 Eureka 서비스 조회
 
 ## 따라하기
 
@@ -48,3 +46,38 @@ depdendencies {
 - `reservation-service`의 Main 클래스에 `@EnableDiscoveryClient` 추가
 - 프로세스 시작
 - `http://localhost:8761`(Eureka Server)에 접속하면, `RESERVATION-SERVICE`가 나타남을 확인할 수 있음
+
+## Spring Initializr를 이용하여 `reservation-client`라는 새로운 모듈 생성 및 설정
+
+- Dependencies에 `Config Client`, `Eureka Discovery`, `Web` 명시하여 새로운 모듈 생성
+- Main 클래스에 `@EnableDiscoveryClient` 추가
+- `application.properties`에 아래 내용 명시
+
+```gradle
+spring.cloud.config.uri=http://localhost:8888
+spring.application.name=eureka-service
+```
+
+- Boot를 실행하면 Eureka Server에 `RESERVATION-CLIENT`가 나타남을 확인할 수 있음
+
+## `DiscoveryClient` api를 이용한 다른 Eureka 서비스 조회
+
+- `ReservationClientApplication` 클래스에 아래 내용 추가
+
+```java
+@Bean
+CommandLineRunner runner(DiscoveryClient dc) {
+    return args ->
+            dc.getInstances("reservation-service")
+                    .forEach(si -> System.out.println(String.format(
+                            "Eureka Client 정보 - serviceId:%s, host:%s, port:%s",
+                            si.getServiceId(), si.getHost(), si.getPort())
+                    ));
+}
+```
+
+- 서버를 재시작하면 콘솔에서 아래 내용 확인할 수 있음
+
+```
+Eureka Client 정보 - serviceId:RESERVATION-SERVICE, host:192.168.0.3, port:8081
+```
