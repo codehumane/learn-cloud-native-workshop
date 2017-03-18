@@ -15,7 +15,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 # 전체 절차
 
 - [x] reservation-client에 `@EnableZullProxy` 추가
-- [ ] 프록시 주소를 통한 reservation-client 접근
+- [x] 프록시 주소를 통한 reservation-client 접근
 - [ ] 서비스로부터의 데이터를 담기 위한 클라이언트 사이드 DTO 작성
 - [ ] hateoas 의존성 추가
 - [ ] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
@@ -38,10 +38,20 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 
 - `reservation-client`에 `org.springframework.cloud:spring-cloud-starter-zuul` 의존성 추가
 - `@EnableZuulProxy` 추가
+- 이 애노테이션 추가의 의미는 [Routing and Filtering](https://spring.io/guides/gs/routing-and-filtering/)에서 아래와 같이 설명하고 있음
+- 즉, `@EnableZuulProxy`의 대상을 리버스 프록시(관련된 요청을 다른 서비스로 전달해 주는)로 만들어준다.
 
-## 프록시 주소를 통한 reservation-client 접근
+> This will turn the Gateway application into a reverse proxy that forwards relevant calls to other services
 
-> Launch a browser and visit the reservation-client at http://localhost:9999/reservation-service/reservations. This is proxying your request to http://localhost:8000/reservations.
+## 프록시 주소를 통한 `reservation-client` 접근
+
+> Launch a browser and visit the reservation-client at `http://localhost:9999/reservation-service/reservations`. This is proxying your request to `http://localhost:8000/reservations`.
+
+- `http://localhost:9999/reservation-service/reservations` 접근
+- `http://localhost:8081/reservations` 접근 모습과 비교 (가이드와 다르게 현재 실습에서는 8081 포트를 사용중)
+- 첫 번째 경로의 요청은 두 번째 경로에 대한 프록시 결과이다.
+- 프록시가 받는 요청을 어디로 보낼지 결정하는 방법으로 [설정 파일에 `zuul.routes.xxx`를 명시하기도](https://spring.io/guides/gs/routing-and-filtering/) 함
+- 여기서는 eureka에 등록된 어플리케이션 아이디인 `reservation-service`를 URL path의 시작부에 명시하는 방법을 사용하고 있다.
 
 ## 서비스로부터의 데이터를 담기 위한 클라이언트 사이드 DTO 작성
 
