@@ -15,9 +15,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = CloudNativeWorkshopApplication.class)
+@SpringBootTest(classes = ReservationServiceApplication.class)
 @WebAppConfiguration
-public class CloudNativeWorkshopApplicationTests {
+public class ReservationServiceApplicationTests {
 
     @Autowired
     private WebApplicationContext webApplicationContext;

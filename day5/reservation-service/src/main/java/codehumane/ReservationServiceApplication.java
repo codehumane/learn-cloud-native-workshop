@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class CloudNativeWorkshopApplication {
+public class ReservationServiceApplication {
 
     @Bean
     HealthIndicator healthIndicator() {
@@ -64,7 +64,7 @@ public class CloudNativeWorkshopApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(CloudNativeWorkshopApplication.class, args);
+		SpringApplication.run(ReservationServiceApplication.class, args);
 	}
 
     @Component
