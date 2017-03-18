@@ -14,12 +14,12 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 
 # 전체 절차
 
-- [ ] reservation-client에 `@EnableZullProxy` 추가
+- [x] reservation-client에 `@EnableZullProxy` 추가
 - [ ] 프록시 주소를 통한 reservation-client 접근
 - [ ] 서비스로부터의 데이터를 담기 위한 클라이언트 사이드 DTO 작성
 - [ ] hateoas 의존성 추가
 - [ ] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
-- [ ] 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames' 메소드 추가한 후 `/names`에 매핑
+- [ ] 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames` 메소드 추가한 후 `/names`에 매핑
 - [ ] actuator 및 hystrix 의존성 추가
 - [ ] `@EnableCircuitBreaker` 선언
 - [ ] `@HystrixCommand` 선언하여 폴백 메소드 명시
@@ -32,9 +32,12 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 
 각각의 절차들을 하나씩 따라하며 관련된 내용 기록.
 
-## reservation-client에 `@EnableZullProxy` 추가
+## `reservation-client`에 `@EnableZullProxy` 추가
 
-> Add org.springframework.cloud:spring-cloud-starter-zuul and @EnableZuulProxy to the reservation-client, then run it.
+> Add `org.springframework.cloud:spring-cloud-starter-zuul` and `@EnableZuulProxy` to the `reservation-client`, then run it.
+
+- `reservation-client`에 `org.springframework.cloud:spring-cloud-starter-zuul` 의존성 추가
+- `@EnableZuulProxy` 추가
 
 ## 프록시 주소를 통한 reservation-client 접근
 
