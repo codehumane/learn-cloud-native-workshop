@@ -18,8 +18,8 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] 프록시 주소를 통한 reservation-client 접근
 - [x] 서비스로부터의 데이터를 담기 위한 클라이언트 측 DTO 작성
 - [x] hateoas 의존성 추가
-- [x] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
-- [ ] 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames` 메소드 추가한 후 `/names`에 매핑
+- [x] `@LoadBalanced RestTemplate`을 사용한 컨트롤러 선언
+- [x] `@LoadBalanced RestTemplate`을 사용한 서비스 호출
 - [ ] actuator 및 hystrix 의존성 추가
 - [ ] `@EnableCircuitBreaker` 선언
 - [ ] `@HystrixCommand` 선언하여 폴백 메소드 명시
@@ -70,21 +70,59 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 
 - `build.gradle`에 `compile('org.springframework.boot:spring-boot-starter-hateoas')` 추가
 
-## `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
+## `@LoadBalanced RestTemplate`을 사용한 컨트롤러 선언
 
 > Add a REST service called ReservationApiGatewayRestController that uses the @Autowired @LoadBalanced RestTemplate rt to make a load-balanced call to a service in the registry using Ribbon.
 
 - `ReservationApiGatewayRestController` 이름의 REST 컨트롤러 생성
-- 컨트롤러 안에 `@Autowred @LoadBalanced RestTemplate rt` 선언
-- registry 안의 서비스에 대한 호출을 로드밸런싱하기 위함
-- 함께 사용된다고 언급된 Ribbon은 실제로는 사용되지 않았음
-- 자세한 설명은 [Client Side Load Balancing with Ribbon and Spring Cloud](https://spring.io/guides/gs/client-side-load-balancing/)에 잘 나와있음
+- 아래 코드와 같이 컨트롤러 안에서 사용할 `RestTemplate` Bean을 `@LoadBalanced`와 함께 선언
 
-## 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames' 메소드 추가한 후 `/names`에 매핑
+```java
+@Bean
+@LoadBalanced
+public RestTemplate restTemplate() {
+    return new RestTemplate();
+}
+```
+
+- registry 안의 서비스 호출을 로드밸런싱하기 위함
+- 내부적으로 Ribbon이 함께 사용됨
+- 자세한 설명은 [Client Side Load Balancing with Ribbon and Spring Cloud](htㄴtps://spring.io/guides/gs/client-side-load-balancing/)에 잘 나와있음
+
+## `@LoadBalanced RestTemplate`을 사용한 서비스 호출
 
 > Map the controller itself to /reservations and then create a new controller handler method, getReservationNames, that's mapped to /names.
 > In the getReservationNames handler, make a call to http://reservation-service/reservations using the RestTemplate#exchange method, specifying the return value with a ParameterizedTypeReference<Resources<Reservation>>> as the final argument to the RestTemplate#exchange method.
 > Take the results of the call and map them from Reservation to Reservation#getReservationName. Then, confirm that http://localhost:9999/reservations/names returns the names.
+
+- 컨트롤러를 `/reservations`에 매핑하고, `getReservationNames`라는 핸들러 메소드 추가후 `/names`에 매핑
+- 핸들러 안에서는 `RestTemplate#exchange` 메소드를 사용하여 `http://reservation-service/reservations`를 호출
+- 이 때 반환값을 `ParameterizedTypeReference<Resources<Reservation>>>`로 명시함
+- 여기서 `Resources`는 `org.springframework.hateoas`의 `Resources`
+- 반환값을 다시 `Reservation#getReservationName`로 매핑
+- 코드는 아래와 같음
+
+```java
+@RequestMapping("/names")
+public Collection<String> getReservationNames() {
+    ParameterizedTypeReference<Resources<Reservation>> parameterizedTypeReference =
+            new ParameterizedTypeReference<Resources<Reservation>>() {
+            };
+
+    ResponseEntity<Resources<Reservation>> exchange = restTemplate.exchange(
+            "http://reservation-service:8081/reservations", HttpMethod.GET, null, parameterizedTypeReference);
+
+    return exchange
+            .getBody()
+            .getContent()
+            .stream()
+            .map(Reservation::getReservationName)
+            .collect(Collectors.toList());
+}
+```
+
+- `http://localhost:9999/reservations/names` 접근하여 결과 확인
+- 로그를 보면 `DynamicServerListLoadBalancer`이 사용되고 있음
 
 ## actuator 및 hystrix 의존성 추가
 
