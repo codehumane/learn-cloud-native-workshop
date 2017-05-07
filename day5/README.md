@@ -20,7 +20,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] hateoas 의존성 추가
 - [x] `@LoadBalanced RestTemplate`을 사용한 컨트롤러 선언
 - [x] `@LoadBalanced RestTemplate`을 사용한 서비스 호출
-- [ ] actuator 및 hystrix 의존성 추가
+- [x] actuator 및 hystrix 의존성 추가
 - [ ] `@EnableCircuitBreaker` 선언
 - [ ] `@HystrixCommand` 선언하여 폴백 메소드 명시
 - [ ] reservation-service 종료시킨 후 `/reservations/names` 접근하여 폴백 여부 확인
@@ -127,6 +127,13 @@ public Collection<String> getReservationNames() {
 ## actuator 및 hystrix 의존성 추가
 
 > Add org.springframework.boot:spring-boot-starter-actuator and org.springframework.cloud:spring-cloud-starter-hystrix to the reservation-client
+
+- `reservation-client`의 `build.gradle`에서 `dependencies` 항목에 아래 2줄 추가
+
+```gradle
+compile('org.springframework.cloud:spring-cloud-starter-zuul')
+compile('org.springframework.cloud:spring-cloud-starter-hystrix')
+```
 
 ## `@EnableCircuitBreaker` 선언
 
