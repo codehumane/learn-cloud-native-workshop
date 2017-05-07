@@ -18,7 +18,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] 프록시 주소를 통한 reservation-client 접근
 - [x] 서비스로부터의 데이터를 담기 위한 클라이언트 측 DTO 작성
 - [x] hateoas 의존성 추가
-- [ ] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
+- [x] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
 - [ ] 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames` 메소드 추가한 후 `/names`에 매핑
 - [ ] actuator 및 hystrix 의존성 추가
 - [ ] `@EnableCircuitBreaker` 선언
@@ -73,6 +73,12 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 ## `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
 
 > Add a REST service called ReservationApiGatewayRestController that uses the @Autowired @LoadBalanced RestTemplate rt to make a load-balanced call to a service in the registry using Ribbon.
+
+- `ReservationApiGatewayRestController` 이름의 REST 컨트롤러 생성
+- 컨트롤러 안에 `@Autowred @LoadBalanced RestTemplate rt` 선언
+- registry 안의 서비스에 대한 호출을 로드밸런싱하기 위함
+- 함께 사용된다고 언급된 Ribbon은 실제로는 사용되지 않았음
+- 자세한 설명은 [Client Side Load Balancing with Ribbon and Spring Cloud](https://spring.io/guides/gs/client-side-load-balancing/)에 잘 나와있음
 
 ## 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames' 메소드 추가한 후 `/names`에 매핑
 
