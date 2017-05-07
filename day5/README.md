@@ -16,7 +16,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 
 - [x] reservation-client에 `@EnableZullProxy` 추가
 - [x] 프록시 주소를 통한 reservation-client 접근
-- [ ] 서비스로부터의 데이터를 담기 위한 클라이언트 사이드 DTO 작성
+- [x] 서비스로부터의 데이터를 담기 위한 클라이언트 측 DTO 작성
 - [ ] hateoas 의존성 추가
 - [ ] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
 - [ ] 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames` 메소드 추가한 후 `/names`에 매핑
@@ -38,10 +38,13 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 
 - `reservation-client`에 `org.springframework.cloud:spring-cloud-starter-zuul` 의존성 추가
 - `@EnableZuulProxy` 추가
-- 이 애노테이션 추가의 의미는 [Routing and Filtering](https://spring.io/guides/gs/routing-and-filtering/)에서 아래와 같이 설명하고 있음
-- 즉, `@EnableZuulProxy`의 대상을 리버스 프록시(관련된 요청을 다른 서비스로 전달해 주는)로 만들어준다.
+- 이 애노테이션 추가의 의미는 아래 설명을 참고
 
 > This will turn the Gateway application into a reverse proxy that forwards relevant calls to other services
+>
+> \- [spring.io Getting Started - Routing and Filtering using Netflix Zuul edge service library](https://spring.io/guides/gs/routing-and-filtering/)
+
+- 즉, `@EnableZuulProxy`의 대상을 리버스 프록시(관련된 요청을 다른 서비스로 전달해 주는)로 만들어줌
 
 ## 프록시 주소를 통한 `reservation-client` 접근
 
@@ -53,9 +56,13 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - 프록시가 받는 요청을 어디로 보낼지 결정하는 방법으로 [설정 파일에 `zuul.routes.xxx`를 명시하기도](https://spring.io/guides/gs/routing-and-filtering/) 함
 - 여기서는 eureka에 등록된 어플리케이션 아이디인 `reservation-service`를 URL path의 시작부에 명시하는 방법을 사용하고 있다.
 
-## 서비스로부터의 데이터를 담기 위한 클라이언트 사이드 DTO 작성
+## 서비스로부터의 데이터를 담기 위한 클라이언트 측 DTO 작성
 
 > In the reservation-client, create a client side DTO - named Reservation, perhaps? - to hold the Reservation data from the service. Do this to avoid being coupled between client and service
+
+- `Reservation`이라는 이름의 클라이언트 측 DTO 생성
+- `reservation-service`로부터 받은 데이터를 담는 용도이며,
+- 클라이언트와 서비스간의 의존성을 낮추기 위함
 
 ## hateoas 의존성 추가
 
