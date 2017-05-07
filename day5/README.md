@@ -17,7 +17,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] reservation-client에 `@EnableZullProxy` 추가
 - [x] 프록시 주소를 통한 reservation-client 접근
 - [x] 서비스로부터의 데이터를 담기 위한 클라이언트 측 DTO 작성
-- [ ] hateoas 의존성 추가
+- [x] hateoas 의존성 추가
 - [ ] `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
 - [ ] 컨트롤러를 `/reservations`에 매핑하고 `getReservationNames` 메소드 추가한 후 `/names`에 매핑
 - [ ] actuator 및 hystrix 의존성 추가
@@ -67,6 +67,8 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 ## hateoas 의존성 추가
 
 > Add org.springframework.boot:spring-boot-starter-hateoas
+
+- `build.gradle`에 `compile('org.springframework.boot:spring-boot-starter-hateoas')` 추가
 
 ## `@LoadBalanced`를 통한 서비스 호출 로드밸런싱
 
