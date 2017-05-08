@@ -21,9 +21,9 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] `@LoadBalanced RestTemplate`을 사용한 컨트롤러 선언
 - [x] `@LoadBalanced RestTemplate`을 사용한 서비스 호출
 - [x] actuator 및 hystrix 의존성 추가
-- [ ] `@EnableCircuitBreaker` 선언
-- [ ] `@HystrixCommand` 선언하여 폴백 메소드 명시
-- [ ] reservation-service 종료시킨 후 `/reservations/names` 접근하여 폴백 여부 확인
+- [x] `@EnableCircuitBreaker` 선언
+- [x] `@HystrixCommand` 선언하여 폴백 메소드 명시
+- [x] `reservation-service` 종료하여 폴백 여부 확인
 - [ ] actifactId를 `hystrix-dashboard`로 하여 새로운 서비스 생성
 - [ ] `bootstrap.properties`에서 식별자를 `hystrix-dashboard`로 명시하고 config server에서 가리키도록 함
 - [ ] `@EnableHystrixDashboard` 선언 후 실행
@@ -139,13 +139,30 @@ compile('org.springframework.cloud:spring-cloud-starter-hystrix')
 
 > Add @EnableCircuitBreaker to our DemoApplication configuration class
 
+- `ReservationClientApplication`에 `@EnableCircuitBreaker` 선언
+- Spring Cloud에게 [CircuitBreaker](https://martinfowler.com/bliki/CircuitBreaker.html)를 사용함을 알려주는 작업
+- 이렇게하면 Circuit Breaker를 위한 서비스 제공자<sup>supplier</sup>의 monitoring, opening, closing을 제공받을 수 있음
+- 구체적인 동작 방식은 아래 소개될 `@HystrixCommand`를 통해 결정됨
+- `@EnableCircuitBreaker`의 사용법은 [여기](https://spring.io/guides/gs/circuit-breaker/)에 잘 설명되어 있음
+- Circuit Breaker 패턴에 대해 간단히 설명하면,
+    - 네트워크를 통해 호출하는 공급자가 문제가 있어 타임아웃이 걸리면, 많은 리소스들이 의미 없이 낭비되곤 함
+    - 이러한 catastrophical cascade를 막는 한가지 방법임
+
 ## `@HystrixCommand` 선언하여 폴백 메소드 명시
 
 > Add @HystrixCommand around any potentially shaky service-to-service calls, like getReservationNames, specifying a fallback method that returns an empty collection.
 
-## reservation-service 종료시킨 후 `/reservations/names` 접근하여 폴백 여부 확인
+- 서비스 대 서비스 호출이 불안정할 수 있는 곳, 여기서는 `getReservationNames` 메소드에 `@HystrixCommand`를 선언
+- 이렇게하면 호출 실패시 `fallbackMethod`에 명시된 메소드가 실행됨
+- 좀 더 자세한 사용법은 [여기](https://spring.io/guides/gs/circuit-breaker/)를 참고
+
+## `reservation-service` 종료하여 폴백 여부 확인
 
 > Test that everything works by killing the reservation-service and revisiting the /reservations/names endpoint
+
+- `reservation-service`를 종료하고
+- `localhost:9999/reservations/names` 접근해보면,
+- `@HystrixCommand`의 fallback 메소드의 결과인 빈배열이 출력됨을 확인할 수 있음
 
 ## actifactId를 `hystrix-dashboard`로 하여 새로운 서비스 생성
 
