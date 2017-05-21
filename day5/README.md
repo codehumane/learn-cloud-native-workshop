@@ -24,7 +24,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] `@EnableCircuitBreaker` 선언
 - [x] `@HystrixCommand` 선언하여 폴백 메소드 명시
 - [x] `reservation-service` 종료하여 폴백 여부 확인
-- [ ] actifactId를 `hystrix-dashboard`로 하여 새로운 서비스 생성
+- [x] `hystrix-dashboard` 서비스 생성
 - [ ] `bootstrap.properties`에서 식별자를 `hystrix-dashboard`로 명시하고 config server에서 가리키도록 함
 - [ ] `@EnableHystrixDashboard` 선언 후 실행
 
@@ -164,9 +164,12 @@ compile('org.springframework.cloud:spring-cloud-starter-hystrix')
 - `localhost:9999/reservations/names` 접근해보면,
 - `@HystrixCommand`의 fallback 메소드의 결과인 빈배열이 출력됨을 확인할 수 있음
 
-## actifactId를 `hystrix-dashboard`로 하여 새로운 서비스 생성
+## `hystrix-dashboard` 서비스 생성
 
 > Go to the Spring Initializr and stand up a new service - with an artifactId of hystrix-dashboard - that uses Eureka Discovery, Config Client, and the Hystrix Dashboard.
+
+- [Spring Initializr](https://start.spring.io/) 이동하여, Artifact에 `hystrix-dashboard`, Dependencies에 `Eureka Discovery`, `Config Client`, `Hystrix Dashboard`를 각각 입력
+- `Generate Project` 버튼 클릭하여 프로젝트 다운로드 받고, `day5`의 하위 프로젝트로 등록시킴
 
 ## `bootstrap.properties`에서 식별자를 `hystrix-dashboard`로 명시하고 config server에서 가리키도록 함
 
