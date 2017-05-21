@@ -25,7 +25,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] `@HystrixCommand` 선언하여 폴백 메소드 명시
 - [x] `reservation-service` 종료하여 폴백 여부 확인
 - [x] `hystrix-dashboard` 서비스 생성
-- [ ] `bootstrap.properties`에서 식별자를 `hystrix-dashboard`로 명시하고 config server에서 가리키도록 함
+- [x] config server 설정
 - [ ] `@EnableHystrixDashboard` 선언 후 실행
 
 # 세부 절차
@@ -168,12 +168,24 @@ compile('org.springframework.cloud:spring-cloud-starter-hystrix')
 
 > Go to the Spring Initializr and stand up a new service - with an artifactId of hystrix-dashboard - that uses Eureka Discovery, Config Client, and the Hystrix Dashboard.
 
-- [Spring Initializr](https://start.spring.io/) 이동하여, Artifact에 `hystrix-dashboard`, Dependencies에 `Eureka Discovery`, `Config Client`, `Hystrix Dashboard`를 각각 입력
-- `Generate Project` 버튼 클릭하여 프로젝트 다운로드 받고, `day5`의 하위 프로젝트로 등록시킴
+- [Spring Initializr](https://start.spring.io/) 이동하여 아래 내용 입력 후 `Generate Project`
+    - `Artifact`: `hystrix-dashboard`
+    - `Dependencies`: `Eureka Discovery`, `Config Client`, `Hystrix Dashboard`
+- 그리고 `day5`의 하위 프로젝트로 등록
 
-## `bootstrap.properties`에서 식별자를 `hystrix-dashboard`로 명시하고 config server에서 가리키도록 함
+## config server 설정
 
 > Identify it is as hystrix-dashboard in bootstrap.properties and point it to config server.
+
+- `bootstrap.properties` 대신 `application.properties`를 사용하고 있음
+- `application.properties`에 아래 내용 입력
+
+```properties
+spring.application.name=hystrix-dashboard
+spring.cloud.config.uri=http://localhost:8888
+```
+
+- `application.properties`를 쓰는 이유와 각 설정의 의미는 `day3` 내용인 [The Config Server](../day3/README.md)를 참고
 
 ## `@EnableHystrixDashboard` 선언 후 실행
 
