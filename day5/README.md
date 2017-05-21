@@ -171,7 +171,7 @@ compile('org.springframework.cloud:spring-cloud-starter-hystrix')
 - [Spring Initializr](https://start.spring.io/) 이동하여 아래 내용 입력 후 `Generate Project`
     - `Artifact`: `hystrix-dashboard`
     - `Dependencies`: `Eureka Discovery`, `Config Client`, `Hystrix Dashboard`
-- 그리고 `day5`의 하위 프로젝트로 등록
+- `day5`의 하위 경로로 이동시키고, `day5/settings.gradle`의 `include` 항목에 `hystrix-dashboard` 추가하여 하위 프로젝트로 인식
 
 ## config server 설정
 
