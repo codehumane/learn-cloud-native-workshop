@@ -26,7 +26,7 @@ Edge 서비스는 클라이언트(스마트 폰, HTML5 응용 프로그램 등)�
 - [x] `reservation-service` 종료하여 폴백 여부 확인
 - [x] `hystrix-dashboard` 서비스 생성
 - [x] config server 설정
-- [ ] `@EnableHystrixDashboard` 선언 후 실행
+- [x] `@EnableHystrixDashboard` 선언 후 실행
 
 # 세부 절차
 
@@ -190,3 +190,8 @@ spring.cloud.config.uri=http://localhost:8888
 ## `@EnableHystrixDashboard` 선언 후 실행
 
 > Annotate it with @EnableHystrixDashboard and run it. You should be able to load it at http://localhost:8010/hystrix.html. It will expect a heartbeat stream from any of the services with a circuit breaker in them. Give it the address from the reservation-client: http://localhost:9999/hystrix.stream
+
+- `HystrixDashboardApplication`에 `@EnableHystrixDashboard` 선언
+- 서버 실행후 `http://localhost:8010/hystrix.html` 접근
+- 최상단 입력창에 `http://localhost:9999/hystrix.stream` 입력 후 `Monitor Stream` 클릭
+- `reservation-service`를 중단, 실행을 반복하면서 `http://localhost:9999/reservation/names`를 계속 접근해보면 dashboard의 지표들이 변경됨을 확인할 수 있음
